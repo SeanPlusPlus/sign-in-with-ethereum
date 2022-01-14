@@ -3,8 +3,6 @@ import React, { useState } from 'react'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
-import ENS, { getEnsAddress } from '@ensdomains/ensjs'
-
 
 const ConnectWallet = () => {
   const [account, setAccount] = useState('')
