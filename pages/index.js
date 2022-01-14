@@ -3,11 +3,14 @@ import React, { useState } from 'react'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
+import ENS, { getEnsAddress } from '@ensdomains/ensjs'
+
 
 const ConnectWallet = () => {
   const [account, setAccount] = useState('')
   const [connection, setConnection] = useState(false)
   const [loggedIn, setLoggedIn] = useState(false)
+  const [ensName, setEnsName] = useState(null)
 
   async function getWeb3Modal() {
     let Torus = (await import('@toruslabs/torus-embed')).default
@@ -36,6 +39,7 @@ const ConnectWallet = () => {
     const accounts = await provider.listAccounts()
     setConnection(connection)
     setAccount(accounts[0])
+
   }
 
   async function signIn() {
@@ -46,6 +50,11 @@ const ConnectWallet = () => {
     const signature = await signer.signMessage(user.nonce.toString())
     const response = await fetch(`/api/verify?address=${account}&signature=${signature}`)
     const data = await response.json()
+
+    const address = await signer.getAddress();
+    const ensName = await provider.lookupAddress(address);
+
+    setEnsName(ensName);
     setLoggedIn(data.authenticated)
   }
 
@@ -60,7 +69,7 @@ const ConnectWallet = () => {
         </div>
       )}
       {
-        loggedIn && <h1>Welcome, {account}</h1>
+        loggedIn && <h1>Welcome, {ensName ? ensName : account}</h1>
       }
     </div>
   )
